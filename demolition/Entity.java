@@ -7,31 +7,35 @@ import demolition.geo.Position;
 import demolition.geo.Direction;
 import demolition.geo.Map;
 import demolition.geo.Tile;
+import demolition.utils.Animation;
 
 import java.util.Arrays;
 import java.util.Random;
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.HashMap;
 
 import processing.core.PApplet;
 import processing.core.PImage;
 
-public abstract class Entity extends Sketcher implements Orientation, Navigation { 
+public abstract class Entity implements Orientation, Navigation { 
 
-	protected Direction direction;
-	protected Position position;
+	public Direction direction;
+	public Position position;
 	protected final Map map;
+	protected final PApplet app;
+	protected Animation current = null;
 
-	Entity(PApplet app, HashMap<String, PImage> imageRegister, Map map) {
-		super(app, imageRegister);
+	Entity(PApplet app, Map map) {
+		this.app = app;
 		this.map = map;
-		draw();
 	}
 
 	public void draw() {}
 
 	public void move() {
 		position = getNextPosition();
+		current.setPosition(position);
 	}
 
 	public Position getNextPosition() {
@@ -50,5 +54,4 @@ public abstract class Entity extends Sketcher implements Orientation, Navigation
 		}
 		return accepted[random.nextInt(j)];
 	}
-
 }

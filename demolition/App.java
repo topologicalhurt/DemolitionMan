@@ -1,8 +1,10 @@
 package demolition;
 
 import demolition.geo.Map;
+import demolition.utils.Animation;
 import demolition.constants.Constants;
 import demolition.exceptions.InvalidMapException;
+import demolition.entities.Player;
 
 import java.util.HashMap;
 
@@ -17,21 +19,23 @@ enum GameState {
 
 public final class App extends PApplet {
 
-    private Map map;
-    private int level = 1;
+    private static Map map;
+    private static Player player;
+    private static int level = 1;
     public static GameState gameState = GameState.PLAY;
-    private HashMap<String, PImage> imageRegister;
+    private static HashMap<String, PImage> scene;
+    private static long clickTime = 0;
 
     private void loadMap() {
         try {
-            map = new Map(this, imageRegister, String.format("level%d.txt", level));
+            map = new Map(this, scene, String.format("level%d.txt", level));
         } catch(InvalidMapException e) {
             e.printStackTrace();
         }
     }
 
     public App() {
-        imageRegister = new HashMap<String, PImage>();
+        scene = new HashMap<String, PImage>();
     }
 
     public void settings() {
@@ -40,11 +44,15 @@ public final class App extends PApplet {
 
     public void setup() {
         frameRate(Constants.FPS);
-        imageRegister.put("solid", loadImage("/src/main/resources/wall/solid.png"));
-        imageRegister.put("goal", loadImage("/src/main/resources/goal/goal.png"));
-        imageRegister.put("empty", loadImage("/src/main/resources/empty/empty.png"));
-        imageRegister.put("broken", loadImage("/src/main/resources/broken/broken.png"));
+        scene.put("solid", loadImage("/src/main/resources/wall/solid.png"));
+        scene.put("goal", loadImage("/src/main/resources/goal/goal.png"));
+        scene.put("empty", loadImage("/src/main/resources/empty/empty.png"));
+        scene.put("broken", loadImage("/src/main/resources/broken/broken.png"));
+
         loadMap();
+
+        player = new Player(this, map); 
+
     }
 
     public void draw() {
@@ -69,6 +77,8 @@ public final class App extends PApplet {
 
     private void playScreen() {
         map.draw();
+        player.move();
+        player.draw();
     }
 
     private void deathScreen() {
@@ -77,6 +87,18 @@ public final class App extends PApplet {
 
     private void winScreen() {
 
+    }
+
+    public void keyPressed() {
+        switch(gameState) {
+            case PLAY:
+                player.setPressedKey(keyCode);
+                break;
+            case DEATH:
+                break; 
+            case WIN:
+                break;
+        }
     }
 
     public static void main(String[] args) {

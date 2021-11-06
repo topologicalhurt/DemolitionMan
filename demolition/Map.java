@@ -18,18 +18,32 @@ public class Map extends Sketcher {
 
 	public Tile[][] grid;
 	private String fName;
+	public Position playerStartPosition;
+	public ArrayList<Position> enemyYellowStartPositions;
+	public ArrayList<Position> enemyRedStartPositions;
 
 	public Map(PApplet app, HashMap<String, PImage> imageRegister, String fName) throws InvalidMapException {
 		super(app, imageRegister);
 		try {
+			enemyYellowStartPositions = new ArrayList<Position>();
+			enemyRedStartPositions = new ArrayList<Position>();
 			ArrayList<ArrayList<Character>> level = FileUtils.readFileAsChar2DArray(fName);
 			grid = new Tile[Constants.MAP_HEIGHT][Constants.MAP_WIDTH];
 			for(int i = 0; i < Constants.MAP_HEIGHT; i++) {
 				for(int j = 0; j < Constants.MAP_WIDTH; j++) {
 					grid[i][j] = new Tile(level.get(i).get(j), new Position(j * Constants.CELL_SIZE.x,
 						i * Constants.CELL_SIZE.y + Constants.TOP_PADDING));
+					switch(grid[i][j].state) {
+						case PLAYER:
+							playerStartPosition = new Position(j, i);
+							break;
+						case ENEMYY:
+							enemyYellowStartPositions.add(new Position(j, i));
+						case ENEMYR:
+							enemyRedStartPositions.add(new Position(j, i));
+						}
+					}
 				}
-			}
 		} catch(FileNotFoundException | MapSymbolNotFoundException e) {
 			throw new InvalidMapException(e.getMessage());
 		}
@@ -49,13 +63,14 @@ public class Map extends Sketcher {
 		int j = 0;
 		for(int i = 0; i < 3; i++) { 
 			if(!Position.between(cache[i], new Position(0, 0),
-			 new Position(Constants.MAP_WIDTH - 1, Constants.MAP_HEIGHT - 1))) {
+			 	new Position(Constants.MAP_WIDTH - 1, Constants.MAP_HEIGHT - 1))) {
 			 	neighbors[j++] = cache[i];
 			}
 		}
 		return neighbors;
 	}	
 
+	@Override
 	public void draw() {
 		for(Tile[] row : grid) { 
 			for(Tile t : row) { 

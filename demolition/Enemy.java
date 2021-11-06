@@ -3,6 +3,7 @@ package demolition.entities;
 import demolition.geo.Position;
 import demolition.geo.Direction;
 import demolition.geo.Map;
+import demolition.utils.Animation;
 
 import java.util.HashMap;
 
@@ -11,8 +12,8 @@ import processing.core.PImage;
 
 public class Enemy extends Entity {
 
-	Enemy(PApplet app, HashMap<String, PImage> imageRegister, Map map) {
-		super(app, imageRegister, map);
+	public Enemy(PApplet app, Map map) {
+		super(app, map);
 	}
 
 	@Override 

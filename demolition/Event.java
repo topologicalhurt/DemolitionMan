@@ -12,7 +12,6 @@ public abstract class Event implements Runnable {
 		}
 	}
 
-	@Override 
 	public void run() {};
 
 }

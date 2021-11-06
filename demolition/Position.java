@@ -13,6 +13,10 @@ public class Position {
 		return new Position(p.x + p2.x, p.y + p2.y);
 	}
 
+	public static Position scale(Position p, int s) {
+		return new Position(s * p.x, s * p.y);
+	}
+
 	public static boolean between(Position p, Position lower, Position upper) { 
 		return (lower.x <= p.x && p.x <= upper.x) && (lower.y <= p.y && p.y <= upper.y);
 	}
