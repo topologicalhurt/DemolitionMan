@@ -13,7 +13,6 @@ import demolition.utils.Animation;
 import demolition.constants.Constants;
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.HashMap;
 
 import processing.core.PApplet;
@@ -29,11 +28,20 @@ public abstract class Entity implements Orientation, Navigation, Collision {
 	protected final PApplet app;
 	protected HashMap<Direction, Animation> anims;
 	protected Animation current;
+	public boolean dead;
 
 	Entity(PApplet app, Map map) {
 		this.app = app;
 		this.map = map;
 		anims = new HashMap<Direction, Animation>();
+	}
+
+	public void death() {
+		if(map.grid[position.y][position.x].state.death) {
+			dead = true;
+			return;
+		}
+		dead = false;
 	}
 
 	public void draw() {
@@ -45,7 +53,9 @@ public abstract class Entity implements Orientation, Navigation, Collision {
 	}
 
 	public void react() {
+		map.grid[position.y][position.x].state = Tile.TState.EMPTY;
 		position = detect() ? nextPosition : position;
+		map.grid[position.y][position.x].state = Tile.TState.ENTITY;
 	}
 
 	protected void updateDrawPos() {
@@ -61,18 +71,6 @@ public abstract class Entity implements Orientation, Navigation, Collision {
 	}
 
 	public void getNextPosition() {
-		Tile[] neighboringTiles = new Tile[4];
-		Position[] neighboringPositions = Map.getNeighboringPositions(position);
-		for(int i = 0; i < 3; i++) {
-			neighboringTiles[i] = map.tileFromPosition(neighboringPositions[i]);
-		}
-		ArrayList<Position> accepted = new ArrayList<Position>();
-		Random random = new Random();
-		for(Tile n : neighboringTiles) { 
-			if(n.state.canWalk) { 
-				accepted.add(n.position);
-			}
-		}
-		nextPosition = accepted.get(random.nextInt(accepted.size()));
+		nextPosition = Position.add(position, direction.dir);
 	}
 }

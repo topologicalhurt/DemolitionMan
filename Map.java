@@ -39,8 +39,10 @@ public class Map extends Sketcher {
 							break;
 						case ENEMYY:
 							enemyYellowStartPositions.add(new Position(j, i));
+							break;
 						case ENEMYR:
 							enemyRedStartPositions.add(new Position(j, i));
+							break;
 						}
 					}
 				}
@@ -61,8 +63,8 @@ public class Map extends Sketcher {
 		cache[2] = Position.add(Direction.SOUTH.dir, pos);
 		cache[3] = Position.add(Direction.WEST.dir, pos);
 		int j = 0;
-		for(int i = 0; i < 3; i++) { 
-			if(!Position.between(cache[i], new Position(0, 0),
+		for(int i = 0; i < 4; i++) { 
+			if(Position.between(cache[i], new Position(0, 0),
 			 	new Position(Constants.MAP_WIDTH - 1, Constants.MAP_HEIGHT - 1))) {
 			 	neighbors[j++] = cache[i];
 			}

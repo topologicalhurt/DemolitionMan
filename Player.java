@@ -25,12 +25,11 @@ public class Player extends Entity {
 		position = map.playerStartPosition;
 		drawPosition = Position.add(Position.scale(position, Constants.CELL_SIZE), 
 									new Position(0, Constants.CELL_SIZE));
-		direction = Direction.SOUTH;
 		nextPosition = position;
-		anims.put(Direction.NORTH, new Animation(app, 4, drawPosition, "/src/main/resources/player/player_up", "png", 0.2f));
-		anims.put(Direction.SOUTH, new Animation(app, 4, drawPosition, "/src/main/resources/player/player", "png", 0.2f));
-		anims.put(Direction.WEST, new Animation(app, 4, drawPosition, "/src/main/resources/player/player_left", "png", 0.2f));
-		anims.put(Direction.EAST, new Animation(app, 4, drawPosition, "/src/main/resources/player/player_right", "png", 0.2f));
+		anims.put(Direction.NORTH, new Animation(app, 4, drawPosition, "/src/main/resources/player/player_up", "png", Constants.SPRITE_DELAY));
+		anims.put(Direction.SOUTH, new Animation(app, 4, drawPosition, "/src/main/resources/player/player", "png", Constants.SPRITE_DELAY));
+		anims.put(Direction.WEST, new Animation(app, 4, drawPosition, "/src/main/resources/player/player_left", "png", Constants.SPRITE_DELAY));
+		anims.put(Direction.EAST, new Animation(app, 4, drawPosition, "/src/main/resources/player/player_right", "png", Constants.SPRITE_DELAY));
 		current = anims.get(Direction.SOUTH);
 	}
 
@@ -49,6 +48,8 @@ public class Player extends Entity {
 			case KeyEvent.VK_RIGHT:
 				direction = Direction.EAST;
 				break;
+			default:
+				return;
 		}
 		current = anims.get(direction);
 		if(currentKeyCode != lastKeyCode) {

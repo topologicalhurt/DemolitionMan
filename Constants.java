@@ -12,4 +12,5 @@ public class Constants {
     public static final int MAP_HEIGHT = 13;
     public static final int MAP_WIDTH = 15;
     public static final int MAX_THREADS = 3;
+    public static final float SPRITE_DELAY = 0.8f;
 }

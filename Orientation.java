@@ -1,6 +1,6 @@
 package demolition.geo;
 
 public interface Orientation {
-	Direction direction = Direction.NONE;
+	Direction direction = null;
 	Position position = null;
 }
