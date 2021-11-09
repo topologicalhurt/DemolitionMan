@@ -55,7 +55,7 @@ public abstract class Entity implements Orientation, Navigation, Collision {
 	public void react() {
 		map.grid[position.y][position.x].state = Tile.TState.EMPTY;
 		position = detect() ? nextPosition : position;
-		map.grid[position.y][position.x].state = Tile.TState.ENTITY;
+		map.grid[position.y][position.x].state = map.grid[position.y][position.x].state.isWin ? Tile.TState.GOAL : Tile.TState.ENTITY;
 	}
 
 	protected void updateDrawPos() {

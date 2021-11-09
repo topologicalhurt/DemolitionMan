@@ -15,6 +15,7 @@ public class Player extends Entity {
 
 	private int lastKeyCode;
 	private int currentKeyCode;
+	public boolean won;
 
 	public void setCurrentKeyCode(int currentKeyCode) {
 		this.currentKeyCode = currentKeyCode;
@@ -31,6 +32,15 @@ public class Player extends Entity {
 		anims.put(Direction.WEST, new Animation(app, 4, drawPosition, "/src/main/resources/player/player_left", "png", Constants.SPRITE_DELAY));
 		anims.put(Direction.EAST, new Animation(app, 4, drawPosition, "/src/main/resources/player/player_right", "png", Constants.SPRITE_DELAY));
 		current = anims.get(Direction.SOUTH);
+	}
+
+
+	public void checkWin() {
+		if(map.grid[position.y][position.x].state.isWin) {
+			won = true;
+		} else {
+			won = false;
+		}
 	}
 
 	@Override

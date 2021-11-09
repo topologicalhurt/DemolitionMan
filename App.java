@@ -1,6 +1,7 @@
 package demolition;
 
 import demolition.geo.Map;
+import demolition.utils.FileUtils;
 import demolition.geo.Position;
 import demolition.utils.Animation;
 import demolition.constants.Constants;
@@ -12,6 +13,9 @@ import demolition.entities.Bomb;
 
 import java.util.HashMap;
 import java.util.ArrayList;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -28,19 +32,23 @@ public final class App extends PApplet {
     private static Map map;
     private static Player player;
     private static Bomb bomb;
-    private static int level = 1;
-    private static int lives = 3;
+    private static ArrayList<String> levels;
+    private static ArrayList<Long> times;
+    private static int levelPointer = 0;
+    private static String currentLevel;
+    private static int lives;
     private static long counter = 0;
-    private static long timeLeft = 150;
+    private static long timeLeft;
     private static PFont font; 
     public static GameState gameState = GameState.PLAY;
     private static HashMap<String, PImage> scene;
     private static ArrayList<RedEnemy> redEnemies;
     private static ArrayList<YellowEnemy> yellowEnemies;
+    private static boolean completed;
 
     private void loadMap() {
         try {
-            map = new Map(this, scene, String.format("level%d.txt", level));
+            map = new Map(this, scene,currentLevel);
         } catch(InvalidMapException e) {
             e.printStackTrace();
         }
@@ -108,8 +116,35 @@ public final class App extends PApplet {
         }
     }
 
+    public void checkGoal() {
+        player.checkWin();
+        if(player.won) {
+            if(levelPointer + 1 < levels.size()) {
+                levelPointer++;
+                timeLeft = times.get(levelPointer);
+                currentLevel = levels.get(levelPointer);
+                player.won = false;
+                setup();
+            } else {
+                completed = true;
+            }
+        }
+    }
+
     public App() {
         scene = new HashMap<String, PImage>();
+        JSONObject jobj = FileUtils.readInConfig("config.json");
+        levels = new ArrayList<String>();
+        times = new ArrayList<Long>();
+        JSONArray jlevels =(JSONArray) jobj.get("levels");
+        for(int i = 0; i < jlevels.size(); i++){
+            JSONObject tmp = (JSONObject) jlevels.get(i);
+            levels.add(tmp.get("path").toString());
+            times.add(Long.parseLong(tmp.get("time").toString()));
+        }
+        currentLevel = levels.get(0);
+        timeLeft = times.get(0);
+        lives = Integer.parseInt(jobj.get("lives").toString());
     }
 
     public void settings() {
@@ -148,6 +183,8 @@ public final class App extends PApplet {
 
         if(lives <= 0 || timeLeft <= 0) {
             gameState = GameState.DEATH;
+        } else if(completed) {
+            gameState = GameState.WIN;
         }
 
         switch(gameState) {
@@ -163,11 +200,6 @@ public final class App extends PApplet {
         }
     }
 
-    public void nextLevel() {
-        level++;
-        loadMap();
-
-    }
 
     private void updateTime() {
         if(++counter > Constants.FPS) {
@@ -182,8 +214,9 @@ public final class App extends PApplet {
         player.draw();
         drawEnemies();
         bomb.draw();
-
         updateTime();
+        checkGoal();
+
         text(String.format("%s", lives), Constants.WIDTH / 2 - 64, 32);
         text(String.format("%d", timeLeft), Constants.WIDTH / 2 + 64, 32);
         image(scene.get("clock"), Constants.WIDTH / 2 + 128, 16);
